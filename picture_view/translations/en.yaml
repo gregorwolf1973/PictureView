@@ -1,0 +1,10 @@
+configuration:
+  image_folder:
+    name: Image folder
+    description: Path to the folder containing camera images (e.g. /share/camera)
+  delete_after_days:
+    name: Delete after days
+    description: Automatically delete images older than this many days (1-365)
+  web_port:
+    name: Web port
+    description: Port for the web interface

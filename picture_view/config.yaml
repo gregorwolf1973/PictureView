@@ -1,0 +1,28 @@
+name: "PictureView"
+description: "Security camera image viewer with timeline and auto-delete"
+version: "0.01"
+url: "https://github.com/gregorwolf1973/PictureView"
+slug: "picture_view"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: application
+boot: auto
+ingress: true
+ingress_port: 8200
+panel_icon: "mdi:camera"
+panel_title: "PictureView"
+options:
+  image_folder: "/share/camera"
+  delete_after_days: 30
+  web_port: 8200
+schema:
+  image_folder: str
+  delete_after_days: int(1,365)
+  web_port: port
+map:
+  - share:rw
+  - media:rw
+  - config:r

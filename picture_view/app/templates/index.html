@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<base href="./">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PictureView</title>
+<style>
+  :root, [data-theme="light"] {
+    --primary: #03a9f4;
+    --primary-text: #fff;
+    --accent: #03a9f4;
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: #e1e5eb;
+    --text: #1c1c1c;
+    --text-dim: #6e7681;
+    --text-bright: #1c1c1c;
+    --danger: #db4437;
+    --success: #0f9d58;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+    --radius: 12px;
+    --gutter: 16px;
+    --header-bg: #ffffff;
+    --input-bg: #f5f6fa;
+    --timeline-active-bg: #e0f3fb;
+    --timeline-active-border: #03a9f4;
+    --timeline-active-text: #0277bd;
+    --timeline-hover-bg: #f0f2f5;
+  }
+  [data-theme="dark"] {
+    --primary: #4fc3f7;
+    --primary-text: #0a0a0a;
+    --accent: #4fc3f7;
+    --bg: #111318;
+    --surface: #1c1f27;
+    --surface2: #252830;
+    --border: #333842;
+    --text: #c8cdd5;
+    --text-dim: #6b7280;
+    --text-bright: #edf0f5;
+    --danger: #f44336;
+    --success: #66bb6a;
+    --shadow: 0 1px 4px rgba(0,0,0,.3);
+    --header-bg: #1c1f27;
+    --input-bg: #111318;
+    --timeline-active-bg: rgba(79,195,247,.12);
+    --timeline-active-border: #4fc3f7;
+    --timeline-active-text: #4fc3f7;
+    --timeline-hover-bg: #252830;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    transition: background .2s, color .2s;
+  }
+
+  header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 var(--gutter);
+    display: flex; align-items: center; gap: 12px;
+    height: 56px; position: sticky; top: 0; z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .logo {
+    font-size: 15px; font-weight: 700; color: var(--accent);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo svg { width: 24px; height: 24px; fill: var(--accent); }
+  .header-spacer { flex: 1; }
+  .stats-chip {
+    font-size: 12px; color: var(--text-dim);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 4px 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .theme-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer;
+    color: var(--text); font-size: 13px; display: flex; align-items: center; gap: 6px;
+    transition: background .15s;
+  }
+  .theme-btn:hover { background: var(--surface2); }
+
+  .main-layout {
+    flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px);
+  }
+
+  /* ── Viewer Area ── */
+  .viewer-area {
+    flex: 1; display: flex; flex-direction: column;
+    padding: var(--gutter); gap: var(--gutter); overflow: hidden;
+  }
+  .image-card {
+    flex: 1; background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    display: flex; flex-direction: column; overflow: hidden; min-height: 0;
+  }
+  .image-toolbar {
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+  }
+  .img-info {
+    flex: 1;
+  }
+  .img-name { font-weight: 600; font-size: 13px; color: var(--text-bright); }
+  .img-date { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .counter-badge {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .image-frame {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: #000; position: relative; min-height: 0;
+  }
+  .image-frame img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    display: block;
+  }
+  .no-image {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: var(--text-dim); padding: 40px;
+  }
+  .no-image svg { width: 64px; height: 64px; opacity: .4; fill: var(--text-dim); }
+  .no-image p { font-size: 15px; }
+  .no-image small { font-size: 12px; }
+
+  .nav-controls {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 24px; cursor: pointer;
+    color: var(--text); font-size: 14px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    transition: background .15s, border-color .15s, color .15s;
+    box-shadow: var(--shadow);
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+  .nav-btn.primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .nav-btn.primary:hover:not(:disabled) {
+    background: var(--primary); opacity: .9;
+  }
+  .nav-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* ── Timeline Panel ── */
+  .timeline-panel {
+    width: 220px; flex-shrink: 0;
+    background: var(--surface); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .timeline-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .timeline-header svg { width: 14px; height: 14px; fill: var(--text-dim); }
+  .timeline-list {
+    flex: 1; overflow-y: auto; padding: 8px;
+  }
+  .timeline-list::-webkit-scrollbar { width: 4px; }
+  .timeline-list::-webkit-scrollbar-track { background: transparent; }
+  .timeline-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .day-group {
+    margin-bottom: 4px; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border);
+    transition: border-color .15s;
+  }
+  .day-group.active {
+    border-color: var(--timeline-active-border);
+  }
+  .day-header {
+    padding: 8px 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    transition: background .15s;
+    user-select: none;
+  }
+  .day-header:hover { background: var(--timeline-hover-bg); }
+  .day-group.active .day-header {
+    background: var(--timeline-active-bg);
+    color: var(--timeline-active-text);
+  }
+  .day-label { flex: 1; font-size: 12px; font-weight: 600; }
+  .day-count {
+    font-size: 11px; background: var(--border);
+    border-radius: 10px; padding: 1px 7px; color: var(--text-dim);
+  }
+  .day-group.active .day-count {
+    background: var(--timeline-active-border); color: #fff;
+  }
+  .day-chevron {
+    width: 14px; height: 14px; fill: var(--text-dim);
+    transition: transform .2s;
+  }
+  .day-group.open .day-chevron { transform: rotate(90deg); }
+
+  .day-images { display: none; padding: 4px; background: var(--bg); }
+  .day-group.open .day-images { display: block; }
+  .thumb-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; border-radius: 7px; cursor: pointer;
+    transition: background .12s;
+  }
+  .thumb-item:hover { background: var(--timeline-hover-bg); }
+  .thumb-item.selected { background: var(--timeline-active-bg); }
+  .thumb-time { font-size: 11px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .thumb-name { font-size: 11px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+
+  .empty-timeline {
+    padding: 24px 16px; text-align: center;
+    color: var(--text-dim); font-size: 12px;
+  }
+
+  /* ── Loading ── */
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Keyboard hint ── */
+  .kbd-hint {
+    font-size: 11px; color: var(--text-dim); text-align: center;
+    padding: 4px 0;
+  }
+  kbd {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 5px; font-size: 10px;
+    font-family: monospace;
+  }
+</style>
+</head>
+<body data-theme="light">
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25S13.24 11.25 12 11.25 9.75 10.24 9.75 9s1.01-2.25 2.25-2.25zM17 17H7v-.75c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg>
+    PictureView
+  </div>
+  <div class="header-spacer"></div>
+  <div class="stats-chip" id="statsChip">
+    <span id="statsText">Lade...</span>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()" title="Theme wechseln">
+    <svg id="themeIcon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+      <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0zM7.05 18.36l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="main-layout">
+  <!-- Viewer -->
+  <div class="viewer-area">
+    <div class="image-card">
+      <div class="image-toolbar">
+        <div class="img-info">
+          <div class="img-name" id="imgName">–</div>
+          <div class="img-date" id="imgDate">Kein Bild ausgewählt</div>
+        </div>
+        <div class="counter-badge" id="counterBadge">0 / 0</div>
+      </div>
+      <div class="image-frame" id="imageFrame">
+        <div class="no-image" id="noImageMsg">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <p>Keine Bilder gefunden</p>
+          <small id="noImgHint">Ordner wird überprüft...</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <button class="nav-btn" id="btnFirst" onclick="goFirst()" title="Erstes Bild">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        Erstes
+      </button>
+      <button class="nav-btn" id="btnPrev" onclick="goPrev()" title="Vorheriges (←)">
+        <svg viewBox="0 0 24 24"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+        Zurück
+      </button>
+      <button class="nav-btn primary" id="btnNext" onclick="goNext()" title="Nächstes (→)">
+        Weiter
+        <svg viewBox="0 0 24 24"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+      </button>
+      <button class="nav-btn" id="btnLast" onclick="goLast()" title="Letztes Bild">
+        Letztes
+        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+      </button>
+    </div>
+
+    <div class="kbd-hint">
+      <kbd>←</kbd> Zurück &nbsp;&nbsp; <kbd>→</kbd> Weiter &nbsp;&nbsp; <kbd>Pos1</kbd> Erstes &nbsp;&nbsp; <kbd>Ende</kbd> Letztes
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline-panel">
+    <div class="timeline-header">
+      <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      Zeitleiste
+    </div>
+    <div class="timeline-list" id="timelineList">
+      <div class="empty-timeline">Lade Bilder...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allImages = [];
+let currentIndex = -1;
+
+const imageFrame = document.getElementById('imageFrame');
+const noImageMsg = document.getElementById('noImageMsg');
+const imgName = document.getElementById('imgName');
+const imgDate = document.getElementById('imgDate');
+const counterBadge = document.getElementById('counterBadge');
+const timelineList = document.getElementById('timelineList');
+
+async function loadImages() {
+  try {
+    const [imgResp, statsResp] = await Promise.all([
+      fetch('./api/images'),
+      fetch('./api/stats')
+    ]);
+    allImages = await imgResp.json();
+    const stats = await statsResp.json();
+
+    document.getElementById('statsText').textContent =
+      `${stats.total} Bilder · ${stats.days} Tage · Auto-Löschen nach ${stats.delete_after_days} Tagen`;
+    document.getElementById('noImgHint').textContent =
+      `Ordner: ${stats.folder}`;
+
+    buildTimeline();
+    updateNav();
+
+    if (allImages.length > 0) {
+      showImage(0);
+    }
+  } catch (e) {
+    document.getElementById('statsText').textContent = 'Fehler beim Laden';
+    timelineList.innerHTML = '<div class="empty-timeline">Verbindungsfehler</div>';
+  }
+}
+
+function buildTimeline() {
+  if (allImages.length === 0) {
+    timelineList.innerHTML = '<div class="empty-timeline">Keine Bilder vorhanden</div>';
+    return;
+  }
+
+  const byDay = {};
+  allImages.forEach((img, idx) => {
+    if (!byDay[img.date]) byDay[img.date] = [];
+    byDay[img.date].push({ ...img, globalIndex: idx });
+  });
+
+  const days = Object.keys(byDay).sort().reverse();
+
+  timelineList.innerHTML = days.map(day => {
+    const items = byDay[day];
+    const dateObj = new Date(day + 'T00:00:00');
+    const label = dateObj.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
+    const thumbs = items.map(img => {
+      const t = img.datetime.split(' ')[1].slice(0, 5);
+      return `<div class="thumb-item" id="thumb-${img.globalIndex}" onclick="showImage(${img.globalIndex})">
+        <span class="thumb-time">${t}</span>
+        <span class="thumb-name">${img.name}</span>
+      </div>`;
+    }).join('');
+    return `<div class="day-group" id="daygroup-${day}">
+      <div class="day-header" onclick="toggleDay('${day}')">
+        <svg class="day-chevron" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        <span class="day-label">${label}</span>
+        <span class="day-count">${items.length}</span>
+      </div>
+      <div class="day-images">${thumbs}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDay(day) {
+  const group = document.getElementById(`daygroup-${day}`);
+  group.classList.toggle('open');
+}
+
+function showImage(index) {
+  if (index < 0 || index >= allImages.length) return;
+  currentIndex = index;
+
+  const img = allImages[index];
+
+  // Remove old img element
+  const oldImg = imageFrame.querySelector('img');
+  if (oldImg) oldImg.remove();
+  noImageMsg.style.display = 'none';
+
+  const el = document.createElement('img');
+  el.src = `./api/image/${encodeURIComponent(img.name)}`;
+  el.alt = img.name;
+  el.onerror = () => {
+    el.remove();
+    noImageMsg.style.display = 'flex';
+  };
+  imageFrame.appendChild(el);
+
+  imgName.textContent = img.name;
+  imgDate.textContent = img.datetime;
+  counterBadge.textContent = `${index + 1} / ${allImages.length}`;
+
+  updateNav();
+  highlightTimeline(index, img.date);
+}
+
+function highlightTimeline(index, date) {
+  // Remove old highlights
+  document.querySelectorAll('.thumb-item.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.day-group.active').forEach(el => el.classList.remove('active'));
+
+  const thumb = document.getElementById(`thumb-${index}`);
+  if (thumb) {
+    thumb.classList.add('selected');
+    thumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  const dayGroup = document.getElementById(`daygroup-${date}`);
+  if (dayGroup) {
+    dayGroup.classList.add('active', 'open');
+  }
+}
+
+function updateNav() {
+  document.getElementById('btnPrev').disabled = currentIndex <= 0;
+  document.getElementById('btnNext').disabled = currentIndex >= allImages.length - 1;
+  document.getElementById('btnFirst').disabled = currentIndex <= 0;
+  document.getElementById('btnLast').disabled = currentIndex >= allImages.length - 1;
+}
+
+function goNext() { if (currentIndex < allImages.length - 1) showImage(currentIndex + 1); }
+function goPrev() { if (currentIndex > 0) showImage(currentIndex - 1); }
+function goFirst() { showImage(0); }
+function goLast() { showImage(allImages.length - 1); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+  else if (e.key === 'Home') { e.preventDefault(); goFirst(); }
+  else if (e.key === 'End') { e.preventDefault(); goLast(); }
+});
+
+function toggleTheme() {
+  const body = document.body;
+  const current = body.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  body.setAttribute('data-theme', next);
+  localStorage.setItem('pv-theme', next);
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('pv-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.body.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+})();
+
+loadImages();
+// Refresh every 60 seconds for new images
+setInterval(async () => {
+  const resp = await fetch('./api/images');
+  const fresh = await resp.json();
+  if (fresh.length !== allImages.length) {
+    const wasAt = currentIndex;
+    allImages = fresh;
+    buildTimeline();
+    updateNav();
+    if (wasAt >= 0 && wasAt < allImages.length) showImage(wasAt);
+    else if (allImages.length > 0) showImage(0);
+  }
+}, 60000);
+</script>
+</body>
+</html>
