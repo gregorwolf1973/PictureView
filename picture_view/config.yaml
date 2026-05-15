@@ -1,6 +1,6 @@
 name: "PictureView"
 description: "Security camera image viewer with timeline and optional auto-delete"
-version: "0.05"
+version: "0.06"
 url: "https://github.com/gregorwolf1973/PictureView"
 slug: "picture_view"
 init: false

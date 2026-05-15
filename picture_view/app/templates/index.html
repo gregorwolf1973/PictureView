@@ -91,18 +91,27 @@
   .theme-btn:hover { background: var(--surface2); }
 
   .main-layout {
-    flex: 1; display: flex; overflow: hidden; height: calc(100vh - 56px);
+    flex: 1; display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    height: calc(100vh - 56px);
+    overflow: hidden;
   }
 
   /* ── Viewer Area ── */
   .viewer-area {
-    flex: 1; display: flex; flex-direction: column;
-    padding: var(--gutter); gap: var(--gutter); overflow: hidden;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    padding: var(--gutter); gap: var(--gutter);
+    overflow: hidden;
+    min-width: 0; min-height: 0;
   }
   .image-card {
-    flex: 1; background: var(--surface); border-radius: var(--radius);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    background: var(--surface); border-radius: var(--radius);
     border: 1px solid var(--border); box-shadow: var(--shadow);
-    display: flex; flex-direction: column; overflow: hidden; min-height: 0;
+    overflow: hidden;
+    min-height: 0;
   }
   .image-toolbar {
     padding: 10px 16px; border-bottom: 1px solid var(--border);
@@ -119,10 +128,12 @@
     white-space: nowrap;
   }
   .image-frame {
-    flex: 1; position: relative; background: #000; min-height: 0; overflow: hidden;
+    position: relative; background: #000;
+    min-height: 0; overflow: hidden;
+    width: 100%; height: 100%;
   }
   .image-frame img {
-    position: absolute; top: 0; left: 0;
+    position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: contain;
     transform-origin: center center;
@@ -198,9 +209,11 @@
 
   /* ── Timeline Panel ── */
   .timeline-panel {
-    width: 220px; flex-shrink: 0;
     background: var(--surface); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column; overflow: hidden;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+    min-height: 0;
   }
   .timeline-header {
     padding: 14px 16px 10px;
@@ -252,7 +265,13 @@
   }
   .day-group.open .day-chevron { transform: rotate(90deg); }
 
-  .day-images { display: none; padding: 4px; background: var(--bg); }
+  .day-images {
+    display: none; padding: 4px; background: var(--bg);
+    max-height: 320px; overflow-y: auto;
+  }
+  .day-images::-webkit-scrollbar { width: 4px; }
+  .day-images::-webkit-scrollbar-track { background: transparent; }
+  .day-images::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   .day-group.open .day-images { display: block; }
   .thumb-item {
     display: flex; align-items: center; gap: 8px;
