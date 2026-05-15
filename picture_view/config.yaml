@@ -1,6 +1,6 @@
 name: "PictureView"
-description: "Security camera image viewer with timeline and auto-delete"
-version: "0.04"
+description: "Security camera image viewer with timeline and optional auto-delete"
+version: "0.05"
 url: "https://github.com/gregorwolf1973/PictureView"
 slug: "picture_view"
 init: false
@@ -16,10 +16,12 @@ panel_icon: "mdi:camera"
 panel_title: "PictureView"
 options:
   image_folder: "/share/camera"
+  auto_delete_enabled: false
   delete_after_days: 30
   web_port: 8200
 schema:
   image_folder: str
+  auto_delete_enabled: bool
   delete_after_days: int(1,365)
   web_port: port
 map:

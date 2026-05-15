@@ -2,9 +2,12 @@ configuration:
   image_folder:
     name: Image folder
     description: Path to the folder containing camera images (e.g. /share/camera)
+  auto_delete_enabled:
+    name: Enable auto-delete
+    description: "WARNING: When enabled, images older than 'Delete after days' will be permanently and irreversibly deleted! Disabled by default."
   delete_after_days:
     name: Delete after days
-    description: Automatically delete images older than this many days (1-365)
+    description: Automatically delete images older than this many days (1-365). Only effective when auto-delete is enabled.
   web_port:
     name: Web port
     description: Port for the web interface

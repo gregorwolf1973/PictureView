@@ -2,9 +2,12 @@ configuration:
   image_folder:
     name: Bildordner
     description: Pfad zum Ordner mit den Kamerabildern (z.B. /share/camera)
+  auto_delete_enabled:
+    name: Auto-Löschen aktivieren
+    description: "ACHTUNG: Wenn aktiviert, werden Bilder die älter als 'Löschen nach Tagen' sind unwiderruflich und dauerhaft gelöscht! Standardmäßig deaktiviert."
   delete_after_days:
     name: Löschen nach Tagen
-    description: Bilder älter als diese Anzahl Tage werden automatisch gelöscht (1-365)
+    description: Bilder älter als diese Anzahl Tage werden automatisch gelöscht (1-365). Nur wirksam wenn Auto-Löschen aktiviert ist.
   web_port:
     name: Web-Port
     description: Port für die Web-Oberfläche

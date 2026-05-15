@@ -407,8 +407,14 @@ async function loadImages() {
     allImages = await imgResp.json();
     const stats = await statsResp.json();
 
+    const deleteInfo = stats.auto_delete_enabled
+      ? `⚠ Auto-Löschen aktiv: Bilder älter als ${stats.delete_after_days} Tage werden unwiderruflich gelöscht`
+      : `Auto-Löschen: deaktiviert`;
     document.getElementById('statsText').textContent =
-      `${stats.total} Bilder · ${stats.days} Tage · Auto-Löschen nach ${stats.delete_after_days} Tagen`;
+      `${stats.total} Bilder · ${stats.days} Tage · ${deleteInfo}`;
+    const chip = document.getElementById('statsChip');
+    chip.style.borderColor = stats.auto_delete_enabled ? 'var(--danger)' : 'var(--border)';
+    chip.style.color = stats.auto_delete_enabled ? 'var(--danger)' : 'var(--text-dim)';
     document.getElementById('noImgHint').textContent =
       `Ordner: ${stats.folder}`;
 

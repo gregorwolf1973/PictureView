@@ -9,6 +9,7 @@ from flask import Flask, abort, jsonify, render_template, send_file
 app = Flask(__name__)
 
 IMAGE_FOLDER = os.environ.get("IMAGE_FOLDER", "/share/camera")
+AUTO_DELETE_ENABLED = os.environ.get("AUTO_DELETE_ENABLED", "false").lower() == "true"
 DELETE_AFTER_DAYS = int(os.environ.get("DELETE_AFTER_DAYS", "30"))
 WEB_PORT = int(os.environ.get("WEB_PORT", "8200"))
 
@@ -34,16 +35,17 @@ def get_images():
 
 def cleanup_old_images():
     while True:
-        cutoff = time.time() - DELETE_AFTER_DAYS * 86400
-        folder = Path(IMAGE_FOLDER)
-        if folder.exists():
-            for f in folder.rglob("*"):
-                if f.is_file() and f.suffix.lower() in ALLOWED_EXT:
-                    try:
-                        if f.stat().st_mtime < cutoff:
-                            f.unlink()
-                    except OSError:
-                        pass
+        if AUTO_DELETE_ENABLED:
+            cutoff = time.time() - DELETE_AFTER_DAYS * 86400
+            folder = Path(IMAGE_FOLDER)
+            if folder.exists():
+                for f in folder.rglob("*"):
+                    if f.is_file() and f.suffix.lower() in ALLOWED_EXT:
+                        try:
+                            if f.stat().st_mtime < cutoff:
+                                f.unlink()
+                        except OSError:
+                            pass
         time.sleep(3600)
 
 
@@ -90,6 +92,7 @@ def api_stats():
     return jsonify({
         "total": total,
         "days": len(days_set),
+        "auto_delete_enabled": AUTO_DELETE_ENABLED,
         "delete_after_days": DELETE_AFTER_DAYS,
         "folder": IMAGE_FOLDER,
     })
