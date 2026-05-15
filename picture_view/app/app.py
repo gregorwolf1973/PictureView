@@ -20,11 +20,12 @@ def get_images():
     if not folder.exists():
         return []
     images = []
-    for f in folder.iterdir():
-        if f.suffix.lower() in ALLOWED_EXT:
+    for f in folder.rglob("*"):
+        if f.is_file() and f.suffix.lower() in ALLOWED_EXT:
             try:
                 mtime = f.stat().st_mtime
-                images.append({"name": f.name, "mtime": mtime, "path": str(f)})
+                rel = str(f.relative_to(folder))
+                images.append({"name": rel, "mtime": mtime, "path": str(f)})
             except OSError:
                 pass
     images.sort(key=lambda x: x["mtime"])
@@ -36,8 +37,8 @@ def cleanup_old_images():
         cutoff = time.time() - DELETE_AFTER_DAYS * 86400
         folder = Path(IMAGE_FOLDER)
         if folder.exists():
-            for f in folder.iterdir():
-                if f.suffix.lower() in ALLOWED_EXT:
+            for f in folder.rglob("*"):
+                if f.is_file() and f.suffix.lower() in ALLOWED_EXT:
                     try:
                         if f.stat().st_mtime < cutoff:
                             f.unlink()
@@ -59,6 +60,7 @@ def api_images():
         dt = datetime.fromtimestamp(img["mtime"])
         result.append({
             "name": img["name"],
+            "basename": Path(img["name"]).name,
             "date": dt.strftime("%Y-%m-%d"),
             "datetime": dt.strftime("%Y-%m-%d %H:%M:%S"),
             "timestamp": img["mtime"],

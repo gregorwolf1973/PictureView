@@ -386,7 +386,7 @@ function buildTimeline() {
       const t = img.datetime.split(' ')[1].slice(0, 5);
       return `<div class="thumb-item" id="thumb-${img.globalIndex}" onclick="showImage(${img.globalIndex})">
         <span class="thumb-time">${t}</span>
-        <span class="thumb-name">${img.name}</span>
+        <span class="thumb-name">${img.basename}</span>
       </div>`;
     }).join('');
     return `<div class="day-group" id="daygroup-${day}">
@@ -417,15 +417,15 @@ function showImage(index) {
   noImageMsg.style.display = 'none';
 
   const el = document.createElement('img');
-  el.src = `./api/image/${encodeURIComponent(img.name)}`;
-  el.alt = img.name;
+  el.src = `./api/image/${img.name.split('/').map(encodeURIComponent).join('/')}`;
+  el.alt = img.basename;
   el.onerror = () => {
     el.remove();
     noImageMsg.style.display = 'flex';
   };
   imageFrame.appendChild(el);
 
-  imgName.textContent = img.name;
+  imgName.textContent = img.name.includes('/') ? img.name : img.basename;
   imgDate.textContent = img.datetime;
   counterBadge.textContent = `${index + 1} / ${allImages.length}`;
 
