@@ -486,9 +486,17 @@ function buildTimeline() {
 }
 
 function toggleDay(day) {
-  const group = document.getElementById(`daygroup-${day}`);
-  group.classList.toggle('open');
+  // Klick auf Tag-Header: zum ersten Bild dieses Tages springen.
+  // Dadurch wird genau dieser Tag automatisch geöffnet und alle anderen geschlossen.
+  const firstIdx = allImages.findIndex(img => img.date === day);
+  if (firstIdx >= 0) {
+    fromDayClick = true;
+    showImage(firstIdx);
+    fromDayClick = false;
+  }
 }
+
+let fromDayClick = false;
 
 function showImage(index) {
   if (index < 0 || index >= allImages.length) return;
@@ -520,20 +528,51 @@ function showImage(index) {
 }
 
 function highlightTimeline(index, date) {
-  // Remove old highlights
+  // Alle Hervorhebungen und alle offenen Tage zurücksetzen
   document.querySelectorAll('.thumb-item.selected').forEach(el => el.classList.remove('selected'));
-  document.querySelectorAll('.day-group.active').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.day-group').forEach(el => el.classList.remove('active', 'open'));
 
-  const thumb = document.getElementById(`thumb-${index}`);
-  if (thumb) {
-    thumb.classList.add('selected');
-    thumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }
-
+  // Nur den aktiven Tag öffnen
   const dayGroup = document.getElementById(`daygroup-${date}`);
   if (dayGroup) {
     dayGroup.classList.add('active', 'open');
   }
+
+  // Thumb markieren (im nächsten Frame, weil die Liste erst angezeigt sein muss)
+  requestAnimationFrame(() => {
+    const thumb = document.getElementById(`thumb-${index}`);
+    if (!thumb) return;
+    thumb.classList.add('selected');
+
+    // Nur scrollen wenn der Thumb außerhalb des sichtbaren Timeline-Bereichs liegt.
+    // Wird der Tag per Klick geöffnet, NICHT scrollen — Nutzer ist schon dort.
+    if (fromDayClick) return;
+    scrollDayIntoView(dayGroup);
+    scrollThumbIntoView(thumb);
+  });
+}
+
+function scrollDayIntoView(group) {
+  const list = document.getElementById('timelineList');
+  if (!list || !group) return;
+  const gTop = group.offsetTop;
+  const gBot = gTop + group.offsetHeight;
+  const vTop = list.scrollTop;
+  const vBot = vTop + list.clientHeight;
+  if (gTop < vTop) list.scrollTop = gTop - 8;
+  else if (gBot > vBot) list.scrollTop = gBot - list.clientHeight + 8;
+}
+
+function scrollThumbIntoView(thumb) {
+  // Innerhalb der eigenen Tagesgruppe (.day-images) scrollen
+  const parent = thumb.closest('.day-images');
+  if (!parent) return;
+  const tTop = thumb.offsetTop - parent.offsetTop;
+  const tBot = tTop + thumb.offsetHeight;
+  const vTop = parent.scrollTop;
+  const vBot = vTop + parent.clientHeight;
+  if (tTop < vTop) parent.scrollTop = tTop - 4;
+  else if (tBot > vBot) parent.scrollTop = tBot - parent.clientHeight + 4;
 }
 
 function updateNav() {
