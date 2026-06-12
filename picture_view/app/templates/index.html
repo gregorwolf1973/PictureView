@@ -52,12 +52,12 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
   html { font-size: 14px; }
   body {
     background: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
-    min-height: 100vh;
     display: flex; flex-direction: column;
     transition: background .2s, color .2s;
   }
@@ -67,9 +67,11 @@
     border-bottom: 1px solid var(--border);
     padding: 0 var(--gutter);
     display: flex; align-items: center; gap: 12px;
-    height: 56px; position: sticky; top: 0; z-index: 100;
+    height: 56px; flex-shrink: 0;
     box-shadow: var(--shadow);
+    z-index: 100;
   }
+  .stats-chip span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
   .logo {
     font-size: 15px; font-weight: 700; color: var(--accent);
     display: flex; align-items: center; gap: 8px;
@@ -91,10 +93,9 @@
   .theme-btn:hover { background: var(--surface2); }
 
   .main-layout {
-    flex: 1; display: grid;
+    flex: 1 1 0; display: grid;
     grid-template-columns: minmax(0, 1fr) 260px;
-    height: calc(100vh - 56px);
-    overflow: hidden;
+    min-height: 0; overflow: hidden;
   }
 
   /* ── Viewer Area ── */
@@ -225,7 +226,8 @@
   }
   .timeline-header svg { width: 14px; height: 14px; fill: var(--text-dim); }
   .timeline-list {
-    flex: 1; overflow-y: auto; padding: 8px;
+    overflow-y: auto; padding: 8px;
+    min-height: 0;
   }
   .timeline-list::-webkit-scrollbar { width: 4px; }
   .timeline-list::-webkit-scrollbar-track { background: transparent; }
@@ -265,13 +267,7 @@
   }
   .day-group.open .day-chevron { transform: rotate(90deg); }
 
-  .day-images {
-    display: none; padding: 4px; background: var(--bg);
-    max-height: 320px; overflow-y: auto;
-  }
-  .day-images::-webkit-scrollbar { width: 4px; }
-  .day-images::-webkit-scrollbar-track { background: transparent; }
-  .day-images::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .day-images { display: none; padding: 4px; background: var(--bg); }
   .day-group.open .day-images { display: block; }
   .thumb-item {
     display: flex; align-items: center; gap: 8px;
@@ -564,15 +560,17 @@ function scrollDayIntoView(group) {
 }
 
 function scrollThumbIntoView(thumb) {
-  // Innerhalb der eigenen Tagesgruppe (.day-images) scrollen
-  const parent = thumb.closest('.day-images');
-  if (!parent) return;
-  const tTop = thumb.offsetTop - parent.offsetTop;
-  const tBot = tTop + thumb.offsetHeight;
-  const vTop = parent.scrollTop;
-  const vBot = vTop + parent.clientHeight;
-  if (tTop < vTop) parent.scrollTop = tTop - 4;
-  else if (tBot > vBot) parent.scrollTop = tBot - parent.clientHeight + 4;
+  const list = document.getElementById('timelineList');
+  if (!list || !thumb) return;
+  // Position relativ zum scroll-container
+  let top = 0;
+  let el = thumb;
+  while (el && el !== list) { top += el.offsetTop; el = el.offsetParent; }
+  const bot = top + thumb.offsetHeight;
+  const vTop = list.scrollTop;
+  const vBot = vTop + list.clientHeight;
+  if (top < vTop) list.scrollTop = top - 4;
+  else if (bot > vBot) list.scrollTop = bot - list.clientHeight + 4;
 }
 
 function updateNav() {
