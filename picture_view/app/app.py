@@ -39,6 +39,7 @@ def cleanup_old_images():
             cutoff = time.time() - DELETE_AFTER_DAYS * 86400
             folder = Path(IMAGE_FOLDER)
             if folder.exists():
+                # 1. Alte Bilddateien löschen
                 for f in folder.rglob("*"):
                     if f.is_file() and f.suffix.lower() in ALLOWED_EXT:
                         try:
@@ -46,6 +47,18 @@ def cleanup_old_images():
                                 f.unlink()
                         except OSError:
                             pass
+
+                # 2. Leere Unterordner löschen (bottom-up, damit verschachtelte
+                #    leere Ordner-Ketten komplett entfernt werden).
+                #    Der Hauptordner IMAGE_FOLDER selbst wird nie gelöscht.
+                root_resolved = folder.resolve()
+                for d in sorted(folder.rglob("*"), key=lambda p: len(p.parts), reverse=True):
+                    try:
+                        if d.is_dir() and d.resolve() != root_resolved:
+                            if not any(d.iterdir()):
+                                d.rmdir()
+                    except OSError:
+                        pass
         time.sleep(3600)
 
 
