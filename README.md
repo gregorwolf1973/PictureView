@@ -16,7 +16,7 @@ Browse all security camera snapshots directly inside Home Assistant – sorted b
 
 | | |
 |---|---|
-| **Version** | 0.05 |
+| **Version** | 0.10 |
 | **Architectures** | aarch64 · amd64 · armv7 |
 | **Ingress** | Yes (opens in HA sidebar, no extra login) |
 

@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     python3 \
     py3-pip
 
-RUN pip3 install --break-system-packages flask pillow
+RUN pip3 install --break-system-packages flask
 
 RUN mkdir -p /app/templates /data/images
 

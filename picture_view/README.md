@@ -3,7 +3,7 @@
 A lightweight security camera image viewer for Home Assistant OS. Browse all your camera snapshots in order, organized by day in a timeline – directly inside Home Assistant.
 
 ![Architectures](https://img.shields.io/badge/arch-aarch64%20|%20amd64%20|%20armv7-blue)
-![Version](https://img.shields.io/badge/version-0.05-green)
+![Version](https://img.shields.io/badge/version-0.10-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973)
