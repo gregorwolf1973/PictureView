@@ -1,5 +1,7 @@
 # PictureView – Full Documentation
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973)
+
 ## Overview
 
 PictureView is a Home Assistant add-on that lets you browse images recorded by a security camera directly inside the Home Assistant interface. Images are displayed in chronological order with a day-based timeline sidebar. Subfolders created automatically by cameras and NVR systems are scanned recursively.
