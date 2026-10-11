@@ -79,27 +79,35 @@ Internal port used by the Flask web server. You normally do not need to change t
 The main area shows the currently selected image at full size. The image is displayed with `object-fit: contain`, meaning it fills the available area while preserving the original aspect ratio (letterboxed with black bars if needed).
 
 **Toolbar (top of image):**
-- File name and full path relative to `image_folder`
-- Creation date and time
-- Image counter (e.g. `42 / 317`)
+- Time of the image (large) and the date below it, with "Heute" / "Gestern" for today and yesterday. File names are not shown.
+- Image counter (e.g. `1 / 317` – `1` is always the newest image)
 - ⚙ Aspect ratio correction button
 
 ### Navigation Controls
 
-| Button | Keyboard | Action |
-|---|---|---|
-| Erstes / First | `Home` | Jump to first image (oldest) |
-| Zurück / Back | `←` | Previous image |
-| Weiter / Next | `→` | Next image |
-| Letztes / Last | `End` | Jump to last image (newest) |
+The viewer always starts at the **newest** image. "Älter" walks back in time through every image, strictly chronologically and across day boundaries, without skipping anything.
 
-### Timeline Sidebar
+| Button | Keyboard | Touch | Action |
+|---|---|---|---|
+| Neuestes | `Home` | – | Jump to the newest image |
+| Neuer | `←` | Swipe right | One image newer |
+| Älter | `→` | Swipe left | One image older |
+| Ältestes | `End` | – | Jump to the oldest image |
+| Zeitleiste | – | Tap (phone only) | Open the timeline sheet |
 
-The right panel groups all available images by calendar day (newest day at the top). Each day entry shows:
-- Abbreviated weekday + date
+### Timeline
+
+On wide screens the timeline is a panel on the right. On phones (screen width up to 768 px) it is hidden and opens as a bottom sheet via the **Zeitleiste** button or by tapping the time/date in the toolbar; `Esc`, the × button or a tap on the dark backdrop closes it.
+
+The timeline groups all images by calendar day, newest day at the top, and lists the images within a day newest first – the same order the navigation buttons use. Each day entry shows:
+- "Heute" / "Gestern" where applicable, abbreviated weekday + date
 - Number of images that day
 
-Click a day header to expand it and see individual entries with timestamps. Click any entry to jump directly to that image. The timeline automatically scrolls to and highlights the currently displayed image.
+Click a day header to jump to the newest image of that day; only that day is expanded. Each entry shows the time of the image. Click any entry to jump directly to that image (on phones this also closes the sheet). The timeline automatically scrolls to and highlights the currently displayed image.
+
+### Mobile Layout
+
+On screens up to 768 px wide the page switches to a single column: the image takes the full width, the navigation buttons become large icon-only touch targets in one row, the keyboard hint is hidden and the header shows only the image count (plus a short warning when auto-delete is active). Swiping on the image moves to the older (swipe left) or newer (swipe right) image.
 
 ### Aspect Ratio Correction
 

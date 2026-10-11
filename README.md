@@ -16,14 +16,15 @@ Browse all security camera snapshots directly inside Home Assistant – sorted b
 
 | | |
 |---|---|
-| **Version** | 0.10 |
+| **Version** | 0.11 |
 | **Architectures** | aarch64 · amd64 · armv7 |
 | **Ingress** | Yes (opens in HA sidebar, no extra login) |
 
 **Features at a glance:**
-- Chronological image viewer with Previous / Next / First / Last navigation
-- Keyboard shortcuts (← → Home End)
-- Timeline sidebar grouped by day – click any thumbnail to jump directly
+- Chronological image viewer – starts at the newest image, "Älter" walks back in time across all days
+- Keyboard shortcuts (← → Home End) and swipe gestures on phones
+- Mobile-friendly layout with large touch buttons; the timeline opens as a bottom sheet on phones
+- Timeline grouped by day, showing the time of each image – click any entry to jump directly
 - Recursive subfolder scan – works with cameras that create dated subfolders automatically
 - Aspect ratio correction for cameras with non-square pixels
 - Optional auto-delete after 1–365 days (disabled by default, with warning)

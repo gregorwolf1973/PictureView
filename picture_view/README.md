@@ -3,7 +3,7 @@
 A lightweight security camera image viewer for Home Assistant OS. Browse all your camera snapshots in order, organized by day in a timeline – directly inside Home Assistant.
 
 ![Architectures](https://img.shields.io/badge/arch-aarch64%20|%20amd64%20|%20armv7-blue)
-![Version](https://img.shields.io/badge/version-0.10-green)
+![Version](https://img.shields.io/badge/version-0.11-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973)
@@ -12,10 +12,11 @@ A lightweight security camera image viewer for Home Assistant OS. Browse all you
 
 ## Features
 
-- **Image viewer** – browse camera snapshots sorted by creation time (oldest → newest)
+- **Image viewer** – starts at the newest snapshot and walks back in time, strictly chronologically across all days
 - **Subfolder support** – automatically scans all subfolders created by your camera
-- **Timeline sidebar** – all images grouped by day; click any day or thumbnail to jump directly
-- **Navigation** – Previous / Next / First / Last buttons + keyboard shortcuts (← → Home End)
+- **Timeline** – all images grouped by day with their time of day; click any day or entry to jump directly
+- **Navigation** – Newer / Older / Newest / Oldest buttons, keyboard shortcuts (← → Home End) and swipe gestures
+- **Mobile layout** – single-column view with large touch buttons; the timeline opens as a bottom sheet on phones
 - **Aspect ratio correction** – correct camera distortion with independent width/height stretch factors (0.5×–2.0×), stored per browser
 - **Auto-delete** – optionally delete images older than 1–365 days (disabled by default, with clear warning)
 - **Dark / Light theme** – follows system preference, switchable in the header
@@ -93,20 +94,21 @@ PictureView scans all subfolders recursively and shows all images sorted by crea
 
 ### Navigation
 
+The viewer always opens at the newest image. **Älter** goes one image back in time, through every image and across day boundaries.
+
 | Control | Action |
 |---|---|
-| **Weiter / Next** button | Next image |
-| **Zurück / Back** button | Previous image |
-| **Erstes / First** button | Jump to first image |
-| **Letztes / Last** button | Jump to last image |
-| `→` | Next image |
-| `←` | Previous image |
-| `Home` | First image |
-| `End` | Last image |
+| **Älter** button, `→`, swipe left | One image older |
+| **Neuer** button, `←`, swipe right | One image newer |
+| **Neuestes** button, `Home` | Jump to the newest image |
+| **Ältestes** button, `End` | Jump to the oldest image |
+| **Zeitleiste** button (phone only) | Open the timeline sheet |
+
+Above the image you see the time and the date of the snapshot ("Heute" / "Gestern" for today and yesterday). File names are not shown.
 
 ### Timeline
 
-The timeline panel on the right shows every day that has at least one image. Click a day to expand it and see individual thumbnails with timestamps. Click any thumbnail to jump directly to that image. The currently displayed image is always highlighted in the timeline.
+On wide screens the timeline panel on the right shows every day that has at least one image, newest day first. On phones it opens as a bottom sheet via the **Zeitleiste** button or by tapping the time above the image. Click a day to jump to its newest image and expand it; each entry shows the time of day. Click any entry to jump directly to that image. The currently displayed image is always highlighted in the timeline.
 
 ### Aspect ratio correction
 
