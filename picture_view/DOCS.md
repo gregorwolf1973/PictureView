@@ -95,6 +95,18 @@ The viewer always starts at the **newest** image. "Älter" walks back in time th
 | Ältestes | `End` | – | Jump to the oldest image |
 | Zeitleiste | – | Tap (phone only) | Open the timeline sheet |
 
+### Automatic Playback
+
+Below the navigation buttons there are two playback buttons and a speed selector:
+
+| Control | Keyboard | Action |
+|---|---|---|
+| ◀ Richtung Neuer | `Space` (last used direction) | Play towards newer images |
+| Richtung Älter ▶ | `Space` (last used direction) | Play towards older images |
+| Speed selector | – | 0.5, 1, 2, 3, 5 or 10 images per second |
+
+The active button turns green and shows a pause icon; clicking it again (or pressing `Space`) pauses. Playback stops automatically when the last image in that direction is reached. The speed is stored in `localStorage`. The next image in the playback direction is preloaded, and the viewer only advances once the current image has finished loading, so slow connections do not skip images.
+
 ### Timeline
 
 On wide screens the timeline is a panel on the right. On phones (screen width up to 768 px) it is hidden and opens as a bottom sheet via the **Zeitleiste** button or by tapping the time/date in the toolbar; `Esc`, the × button or a tap on the dark backdrop closes it.

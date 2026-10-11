@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12
+
+- Automatische Wiedergabe: zwei Knöpfe unter der Navigation spielen die Bilder
+  Richtung „Neuer“ oder Richtung „Älter“ ab, der aktive Knopf wird zum
+  Pause-Knopf. Am letzten Bild der Richtung stoppt die Wiedergabe von selbst.
+- Geschwindigkeit wählbar von 0,5 bis 10 Bilder pro Sekunde; die Einstellung
+  bleibt im Browser gespeichert. Das jeweils nächste Bild wird vorgeladen,
+  und es wird erst weitergeschaltet, wenn das aktuelle Bild geladen ist.
+- Leertaste startet bzw. pausiert die Wiedergabe (zuletzt benutzte Richtung).
+
 ## 0.11
 
 - Oberfläche für das Handy überarbeitet: einspaltige Ansicht, große

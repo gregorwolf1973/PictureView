@@ -3,7 +3,7 @@
 A lightweight security camera image viewer for Home Assistant OS. Browse all your camera snapshots in order, organized by day in a timeline – directly inside Home Assistant.
 
 ![Architectures](https://img.shields.io/badge/arch-aarch64%20|%20amd64%20|%20armv7-blue)
-![Version](https://img.shields.io/badge/version-0.11-green)
+![Version](https://img.shields.io/badge/version-0.12-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973)
@@ -16,6 +16,7 @@ A lightweight security camera image viewer for Home Assistant OS. Browse all you
 - **Subfolder support** – automatically scans all subfolders created by your camera
 - **Timeline** – all images grouped by day with their time of day; click any day or entry to jump directly
 - **Navigation** – Newer / Older / Newest / Oldest buttons, keyboard shortcuts (← → Home End) and swipe gestures
+- **Automatic playback** – play towards newer or older images at 0.5–10 images per second; stops at the end
 - **Mobile layout** – single-column view with large touch buttons; the timeline opens as a bottom sheet on phones
 - **Aspect ratio correction** – correct camera distortion with independent width/height stretch factors (0.5×–2.0×), stored per browser
 - **Auto-delete** – optionally delete images older than 1–365 days (disabled by default, with clear warning)
@@ -103,6 +104,8 @@ The viewer always opens at the newest image. **Älter** goes one image back in t
 | **Neuestes** button, `Home` | Jump to the newest image |
 | **Ältestes** button, `End` | Jump to the oldest image |
 | **Zeitleiste** button (phone only) | Open the timeline sheet |
+| **◀ Richtung Neuer** / **Richtung Älter ▶** buttons, `Space` | Automatic playback in that direction; click again to pause |
+| Speed selector | 0.5–10 images per second for automatic playback |
 
 Above the image you see the time and the date of the snapshot ("Heute" / "Gestern" for today and yesterday). File names are not shown.
 

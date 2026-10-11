@@ -221,6 +221,31 @@
   .nav-btn svg { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
   .nav-btn.timeline-btn { display: none; }
 
+  /* ── Wiedergabe ── */
+  .controls { display: flex; flex-direction: column; gap: 10px; }
+  .play-controls {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    flex-shrink: 0;
+  }
+  .nav-btn .icon-pause { display: none; }
+  .nav-btn.playing { background: var(--success); border-color: var(--success); color: #fff; }
+  .nav-btn.playing:hover:not(:disabled) { background: var(--success); border-color: var(--success); opacity: .9; }
+  .nav-btn.playing .icon-play { display: none; }
+  .nav-btn.playing .icon-pause { display: block; }
+  .speed-ctl {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 8px 0 10px; box-shadow: var(--shadow);
+    color: var(--text-dim); font-size: 12px; white-space: nowrap;
+  }
+  .speed-ctl svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+  .speed-ctl select {
+    background: transparent; border: none; color: var(--text);
+    font-size: 14px; font-weight: 500; padding: 10px 4px; cursor: pointer;
+    font-family: inherit; outline: none;
+  }
+  .speed-ctl select option { background: var(--surface); color: var(--text); }
+
   /* ── Timeline Panel ── */
   .sheet-backdrop { display: none; }
   .timeline-panel {
@@ -350,7 +375,17 @@
     .nav-btn svg { width: 26px; height: 26px; }
     .nav-btn:hover:not(:disabled) { background: var(--surface); border-color: var(--border); color: var(--text); }
     .nav-btn.primary:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1; }
+    .nav-btn.playing:hover:not(:disabled) { opacity: 1; }
     .nav-btn.timeline-btn { display: flex; }
+
+    .controls { gap: 6px; }
+    .play-controls {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .nav-controls { padding-bottom: 0; }
+    .speed-ctl { min-height: 50px; }
+    .speed-ctl select { font-size: 15px; padding: 12px 2px; }
 
     .sheet-backdrop {
       display: block; position: fixed; inset: 0; background: var(--backdrop);
@@ -437,6 +472,7 @@
       </div>
     </div>
 
+    <div class="controls">
     <div class="nav-controls">
       <button class="nav-btn" id="btnNewest" onclick="goNewest()" title="Neuestes Bild (Pos1)">
         <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
@@ -460,8 +496,33 @@
       </button>
     </div>
 
+    <div class="play-controls">
+      <button class="nav-btn" id="btnPlayNewer" onclick="togglePlay(-1)" title="Automatisch Richtung Neuer abspielen">
+        <svg class="icon-play" viewBox="0 0 24 24"><path d="M17 6v12L7 12z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+        <span>Richtung Neuer</span>
+      </button>
+      <label class="speed-ctl" title="Bilder pro Sekunde">
+        <svg viewBox="0 0 24 24"><path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/></svg>
+        <select id="fpsSelect" onchange="setFps(this.value)">
+          <option value="0.5">0,5 B/s</option>
+          <option value="1">1 B/s</option>
+          <option value="2">2 B/s</option>
+          <option value="3">3 B/s</option>
+          <option value="5">5 B/s</option>
+          <option value="10">10 B/s</option>
+        </select>
+      </label>
+      <button class="nav-btn" id="btnPlayOlder" onclick="togglePlay(1)" title="Automatisch Richtung Älter abspielen">
+        <span>Richtung Älter</span>
+        <svg class="icon-play" viewBox="0 0 24 24"><path d="M7 6v12l10-6z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+      </button>
+    </div>
+    </div>
+
     <div class="kbd-hint">
-      <kbd>←</kbd> Neuer &nbsp;&nbsp; <kbd>→</kbd> Älter &nbsp;&nbsp; <kbd>Pos1</kbd> Neuestes &nbsp;&nbsp; <kbd>Ende</kbd> Ältestes
+      <kbd>←</kbd> Neuer &nbsp;&nbsp; <kbd>→</kbd> Älter &nbsp;&nbsp; <kbd>Pos1</kbd> Neuestes &nbsp;&nbsp; <kbd>Ende</kbd> Ältestes &nbsp;&nbsp; <kbd>Leer</kbd> Abspielen / Pause
     </div>
   </div>
 
@@ -488,6 +549,13 @@ let currentIndex = -1;
 let stretchX = parseFloat(localStorage.getItem('pv-stretch-x') || '1.0');
 let stretchY = parseFloat(localStorage.getItem('pv-stretch-y') || '1.0');
 let fromDayClick = false;
+
+// Automatische Wiedergabe: playDir +1 = Richtung älter, -1 = Richtung neuer
+let playTimer = null;
+let playDir = 0;
+let lastPlayDir = 1;
+let fps = parseFloat(localStorage.getItem('pv-fps') || '2');
+let currentImgEl = null;
 
 const imageFrame = document.getElementById('imageFrame');
 const noImageMsg = document.getElementById('noImageMsg');
@@ -524,6 +592,10 @@ function formatDayLong(dateStr) {
 
 function timeOf(img) {
   return (img.datetime.split(' ')[1] || '').slice(0, 8);
+}
+
+function imgUrl(img) {
+  return `./api/image/${img.name.split('/').map(encodeURIComponent).join('/')}`;
 }
 
 async function loadStats() {
@@ -621,7 +693,7 @@ function showImage(index) {
   noImageMsg.style.display = 'none';
 
   const el = document.createElement('img');
-  el.src = `./api/image/${img.name.split('/').map(encodeURIComponent).join('/')}`;
+  el.src = imgUrl(img);
   el.alt = img.datetime;
   el.draggable = false;
   el.onerror = () => {
@@ -630,6 +702,8 @@ function showImage(index) {
   };
   applyStretch(el);
   imageFrame.appendChild(el);
+  currentImgEl = el;
+  preloadNeighbors();
 
   const rel = relativeDay(img.date);
   imgTime.textContent = timeOf(img);
@@ -690,12 +764,81 @@ function updateNav() {
   document.getElementById('btnNewest').disabled = atNewest;
   document.getElementById('btnOlder').disabled = atOldest;
   document.getElementById('btnOldest').disabled = atOldest;
+  document.getElementById('btnPlayNewer').disabled = atNewest && playDir !== -1;
+  document.getElementById('btnPlayOlder').disabled = atOldest && playDir !== 1;
 }
 
 function goOlder()  { if (currentIndex < allImages.length - 1) showImage(currentIndex + 1); }
 function goNewer()  { if (currentIndex > 0) showImage(currentIndex - 1); }
 function goNewest() { showImage(0); }
 function goOldest() { showImage(allImages.length - 1); }
+
+// ── Automatische Wiedergabe ──
+function preloadNeighbors() {
+  // Beim Abspielen nur die Richtung vorladen, sonst beide Nachbarn.
+  const dirs = playDir ? [playDir] : [1, -1];
+  dirs.forEach(d => {
+    const n = allImages[currentIndex + d];
+    if (n) { const p = new Image(); p.src = imgUrl(n); }
+  });
+}
+
+function playTick() {
+  // Nicht weiterschalten, solange das aktuelle Bild noch lädt.
+  if (currentImgEl && currentImgEl.parentNode && !currentImgEl.complete) return;
+  const next = currentIndex + playDir;
+  if (next < 0 || next >= allImages.length) { stopPlay(); return; }
+  showImage(next);
+  // Letztes Bild in dieser Richtung erreicht: sofort anhalten.
+  if (next + playDir < 0 || next + playDir >= allImages.length) stopPlay();
+}
+
+function startPlayTimer() {
+  clearInterval(playTimer);
+  playTimer = setInterval(playTick, Math.max(50, Math.round(1000 / fps)));
+}
+
+function togglePlay(dir) {
+  if (playTimer && playDir === dir) { stopPlay(); return; }
+  const next = currentIndex + dir;
+  if (next < 0 || next >= allImages.length) return;
+  playDir = dir;
+  lastPlayDir = dir;
+  startPlayTimer();
+  updatePlayUI();
+  preloadNeighbors();
+}
+
+function stopPlay() {
+  clearInterval(playTimer);
+  playTimer = null;
+  playDir = 0;
+  updatePlayUI();
+}
+
+function updatePlayUI() {
+  document.getElementById('btnPlayNewer').classList.toggle('playing', playDir === -1);
+  document.getElementById('btnPlayOlder').classList.toggle('playing', playDir === 1);
+  updateNav();
+}
+
+function setFps(val) {
+  fps = Math.min(30, Math.max(0.1, parseFloat(val) || 2));
+  localStorage.setItem('pv-fps', String(fps));
+  document.getElementById('fpsSelect').value = String(fps);
+  if (playTimer) startPlayTimer();
+}
+
+(function initFps() {
+  const sel = document.getElementById('fpsSelect');
+  const has = Array.from(sel.options).some(o => parseFloat(o.value) === fps);
+  if (!has) {
+    const o = document.createElement('option');
+    o.value = String(fps); o.textContent = `${String(fps).replace('.', ',')} B/s`;
+    sel.appendChild(o);
+  }
+  sel.value = String(fps);
+})();
 
 // ── Zeitleiste als Bottom-Sheet (nur auf schmalen Bildschirmen sichtbar) ──
 function openTimeline() {
@@ -716,12 +859,16 @@ function closeTimeline() {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
   if (e.key === 'ArrowRight') { e.preventDefault(); goOlder(); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); goNewer(); }
   else if (e.key === 'Home') { e.preventDefault(); goNewest(); }
   else if (e.key === 'End') { e.preventDefault(); goOldest(); }
   else if (e.key === 'Escape') { closeTimeline(); }
+  else if (e.key === ' ' && e.target.tagName !== 'BUTTON') {
+    e.preventDefault();
+    if (playTimer) stopPlay(); else togglePlay(lastPlayDir);
+  }
 });
 
 // ── Wischen auf dem Bild: nach links = älter, nach rechts = neuer ──
