@@ -6,7 +6,7 @@ A lightweight security camera image viewer for Home Assistant OS. Browse all you
 ![Version](https://img.shields.io/badge/version-0.12-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973)
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/gregorwolf1973) [![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Gregor_Wolf/donate)
 
 ---
 
